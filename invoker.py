@@ -1,12 +1,12 @@
 import time
 # from tasks import add
-from tasks import data_extractor
-from celery.result import AsyncResult
+# from tasks import data_extractor
+# from celery.result import AsyncResult
 
 #Producer part of code
 # result = add.delay(1,2)
 
-data_extractor.delay()
+# data_extractor.delay()
 
 # while True:
 #     _result2 = AsyncResult(result.task_id)

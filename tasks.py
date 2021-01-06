@@ -1,5 +1,7 @@
 import time
 from celery import Celery
+from django_celery_beat.models import periodic_task
+from datetime import timedelta
 
 app = Celery('tasks', backend = 'redis://localhost:6379/0', broker = 'redis://localhost:6379/0')
 
@@ -15,11 +17,11 @@ app = Celery('tasks', backend = 'redis://localhost:6379/0', broker = 'redis://lo
 #Exception handling in Celery
 
 ##Exponential backoff
-def backoff(attempts):
-    """
-    1,2,4,8,16,32,...
-    """
-    return 2 ** attempts
+# def backoff(attempts):
+#     """
+#     1,2,4,8,16,32,...
+#     """
+#     return 2 ** attempts
 
 
 @app.task(bind=True, max_retries=4)
@@ -32,3 +34,12 @@ def data_extractor(self):
     except Exception as exc:
         print('Lets retry after 5 seconds')
         raise self.retry(exc=exc, countdown=backoff(self.request.retries))
+
+#Periodic task illustration using Celery
+@periodic_task(run_every=timedelta(seconds=3), name = "tasks.send_mail_from_queue")
+def send_mail_from_queue():
+    try:
+        messages_sent = "example.email"
+        print("Email message successfully sent, [{}]".format(messages_sent))
+    finally:
+        print("release resources")
